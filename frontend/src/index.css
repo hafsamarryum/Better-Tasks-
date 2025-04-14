@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Playwrite+VN:wght@100..400&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body{
+   box-sizing: border-box;
+   margin: auto;
+   padding: auto;
+   /* background-color: #dcfce7; */
+}
+
+.font {
+   font-family: "Jura", serif;
+   font-optical-sizing: auto;
+   font-weight: 900;
+   font-style: normal;
+}
+
+
+.custom-scroll {
+   scrollbar-width: none; 
+}
+
