@@ -23,8 +23,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-300 via-yellow-200 to-blue-300">
-      <div className="relative w-[360px] bg-white bg-opacity-20 rounded-xl shadow-xl backdrop-blur-md px-8 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fdb0b6] via-[#f8efa5] to-[#8dbff0]">
+      <div className="relative w-[360px] bg-transparent bg-opacity-20 rounded-xl shadow-xl backdrop-blur-md p-[12px]  border-[#FFF] border-[2px] rounded-[13px] ">
         {/* Avatar */}
         <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
           <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -33,17 +33,17 @@ const Login: React.FC = () => {
         </div>
 
         
-        <h2 className="text-center text-white text-xl font-semibold mb-6 mt-6">Login Form</h2>
+        <h2 className="text-center text-[#bcbfb8]  mb-6 mt-6">Login Form</h2>
 
        
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4  flex flex-col gap-[20px]  ">
          
-          <div>
+          <div className='w-full flex flex-column gap-[20px]'>
             <input
               type="email"
               placeholder="Email"
               {...register('email', { required: 'Email is required' })}
-              className="w-full px-4 py-2 rounded-md bg-white bg-opacity-80 focus:outline-none"
+              className="w-full py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#bcbfb8] border-none rounded-[6px]"
             />
             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
           </div>
@@ -54,7 +54,7 @@ const Login: React.FC = () => {
               type={showPass ? 'text' : 'password'}
               placeholder="Password"
               {...register('password', { required: 'Password is required' })}
-              className="w-full px-4 py-2 rounded-md bg-white bg-opacity-80 focus:outline-none"
+              className="w-full py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#bcbfb8] border-none rounded-[6px] "
             />
             <button
               type="button"
@@ -66,20 +66,18 @@ const Login: React.FC = () => {
             {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
           </div>
 
-         
+         <div className='flex justify-center'>
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 rounded-md font-semibold hover:opacity-90 transition outline-none border-none"
-          >
-            Login
-          </button>
-
+            className="w-[220px] bg-gradient-to-r from-[#7ac5ec] to-[#73bdd5] text-[#FFF]  py-[12px] rounded-[8px] hover:opacity-90 transition border-none text-center font-bold text-[20px]"
+          >Login </button>
+          </div>
          
           <hr className="border-t border-white/40 mt-4" />
 
-          <div className="text-center text-white text-sm mt-2">
+          <div className="text-center text-[#bcbfb8] text-[17px] mt-2">
             Don’t have an account?{' '}
-            <Link to="/register" className="underline hover:text-blue-200">REGISTER HERE</Link>
+            <Link to="/register" className="underline hover:text-blue-200 ml-[7px] text-[#939efa]">REGISTER HERE</Link>
           </div>
         </form>
       </div>
