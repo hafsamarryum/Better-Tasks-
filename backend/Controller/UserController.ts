@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import prisma from "../DB/db.config.js";
 import bcrypt from "bcrypt";
 
-const createUser = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+
+ // create user
+const createUser = async (req: Request, res: Response): Promise<any> => {
+
   try {
     const { name, email, password } = req.body;
 
@@ -42,6 +42,46 @@ const createUser = async (
       .json({ status: 500, message: "Internal Server Error" });
   }
 };
+   // update User
+  export const updateUser = async (req: Request, res: Response): Promise<any> =>{
+     const userId = req.params.id;
+     const {name, email, password} = req.body;
 
+     await prisma.user.update({
+       where: {id:Number(userId)},
+       data: { name:name, email:email, password:password}})
+
+       return res.status(200).json({status:200,  msg: "User updated successfully"})
+  };
+
+  // fetch Users
+  export const fetchUsers = async (req:Request, res:Response): Promise<any> =>{
+    const users = await prisma.user.findMany({})
+
+    return res.status(200).json({ status: 200, data: users});
+  };
+
+  // show user
+  export const showUser = async (req:Request, res:Response): Promise<any> =>{
+     const userId = req.params.id;
+     const user = await prisma.user.findFirst({
+      where:{
+        id:Number(userId)
+      }
+     })
+
+     return res.status(200).json({status: 200, data: user})
+  };
+ 
+   // delete user
+   export const deleteUser = async (req:Request, res:Response): Promise<any> =>{
+      const userId = req.params.id;
+      await prisma.user.delete({
+        where: { id: Number(userId)},
+      });
+
+      return res.status(200).json({status:200,  msg: "User deleted successfully"})
+   }; 
 
 export default createUser;
+
