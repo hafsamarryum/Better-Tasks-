@@ -1,13 +1,17 @@
 import { Router } from "express";
 import UserRoutes from "./userRoutes.js";
+import authRoutes from "./auth.js";
 
-const router = Router()
+const router = Router();
 
-router.use("/api/user",  UserRoutes);
+router.use('/auth', authRoutes)
 
-router.get("/", (req, res) => {
-  res.status(201).json("Server Created hi")
-}); 
+router.use("/user", UserRoutes);
 
 
-export default router
+ //in the app.js
+router.get("/api", (req, res) => {
+  res.status(201).json("Server Created hi");
+});
+
+export default router;

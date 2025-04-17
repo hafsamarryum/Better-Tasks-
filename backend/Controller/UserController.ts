@@ -55,8 +55,8 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
   };
 
   // fetch Users
-  export const fetchUsers = async (req:Request, res:Response): Promise<any> =>{
-    const users = await prisma.user.findMany({})
+  export const fetchUsers = async (_req:Request, res:Response): Promise<any> =>{
+    const users = await prisma.user.findMany({ select: { id: true, name: true, email: true, role: true } })
 
     return res.status(200).json({ status: 200, data: users});
   };

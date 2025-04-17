@@ -1,9 +1,7 @@
 import "./index.css";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import Register from './components/Register';
-import { ToastContainer } from "react-toastify";
-
+import { BrowserRouter , Routes, Route } from 'react-router-dom';
+import { ToastContainer } from "react-toastify"
+import AuthRoutes from "./routes/AuthRoutes";
 // import Header from "./components/Header";
 
 function App() {
@@ -11,13 +9,11 @@ function App() {
     <>
       <ToastContainer />
       {/* <Header /> */}
-      <Router>
+      <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Register />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/*" element={<AuthRoutes />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
     </>
   );
 }

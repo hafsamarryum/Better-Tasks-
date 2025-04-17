@@ -1,8 +1,8 @@
-import express from "express";
-const app = express();
+import express, {Express} from "express";
+const app:Express = express();
 import dotenv from "dotenv";
 import cors from "cors";
-import routes from "./routes/index.js";
+import router from "./routes/index.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 8000;
@@ -18,12 +18,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-
-try {
-  app.use(routes);
-} catch (err) {
-  console.error("Error loading routes:", err);
-}
+app.use('/api', router);
 
 app.listen(PORT,()=> {
   console.log(`Server start at port no : ${PORT}`);
