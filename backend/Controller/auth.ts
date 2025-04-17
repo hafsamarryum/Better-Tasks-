@@ -3,6 +3,7 @@ import prisma from "../DB/db.config.js";
 import bcrypt from "bcrypt";
 import  jwt from "jsonwebtoken";
 import { loginSchema, signupSchema } from "../validations/authValidation.js";
+import { Role } from "../generated/prisma/index.js";
 export const JWT_SECRET = process.env.JWT_SECRET!
 
 
@@ -24,7 +25,7 @@ export const signup = async (req:Request, res:Response): Promise<any> =>{
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prisma.user.create({
-      data: {name: name, email: email, password: hashedPassword,role: "MEMBER"},
+      data: {name: name, email: email, password: hashedPassword, role: role ?? Role.MEMBER},
     });
 
     return res.status(201).json({ status: 201, data: newUser, msg: "User Register successfully." });

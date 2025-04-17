@@ -6,8 +6,7 @@ const router = Router();
 
 router.use('/auth', authRoutes)
 
-router.use("/user", UserRoutes);
-
+router.use("/api/users", UserRoutes);
 
  //in the app.js
 router.get("/api", (req, res) => {
