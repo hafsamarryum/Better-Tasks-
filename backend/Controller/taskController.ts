@@ -70,7 +70,7 @@ export const updateTaskStatus = async (req:Request, res:Response) => {
     if (error) {
       return res.status(400).json({msg: error.message})
     }
-    
+  
     const { taskId } = req.params;
     const { status } = req.body;
 
