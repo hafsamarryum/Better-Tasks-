@@ -57,6 +57,8 @@ export const signup = async (req:Request, res:Response): Promise<any> =>{
         userId: user.id, role: user.role
       },JWT_SECRET)
 
+      console.log("................ login user data:", token)
+
       return res.status(200).json({ status: 200, token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   
     } catch (error) {
@@ -67,6 +69,6 @@ export const signup = async (req:Request, res:Response): Promise<any> =>{
 
    // authlogin user
   export const me = async (req:Request, res:Response): Promise<any> => {
-    res.json(req.user)
+    return res.json(req.user)
   }
 

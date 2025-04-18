@@ -3,7 +3,7 @@ import jwt  from "jsonwebtoken";
 import prisma from "../DB/db.config.js";
 import { JWT_SECRET } from "../Controller/auth.js";
 
-const authMiddleware = async (req: Request, res:Response, next:NextFunction): Promise<any> =>{
+const authMiddleware = async (req:Request, res:Response, next:NextFunction): Promise<any> =>{
    const token = req.headers.authorization?.split(" ")[1];
    if(!token) {
     return res.status(401).json({status: 401, msg: "Unauthorized access!"})
@@ -15,7 +15,7 @@ const authMiddleware = async (req: Request, res:Response, next:NextFunction): Pr
       return res.status(401).json({status: 401, msg: "User not found"})
     }
 
-    req.user = { id: user.id, role: user.role };
+    req.user = user;
     next();
    } catch (error) {
     return  res.status(401).json({status: 401, msg: "Unvalid token!"})
