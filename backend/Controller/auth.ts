@@ -67,6 +67,6 @@ export const signup = async (req:Request, res:Response): Promise<any> =>{
 
    // authlogin user
   export const me = async (req:Request, res:Response): Promise<any> => {
-    res.json(req.user)
+    return res.json(req.user)
   }
 
