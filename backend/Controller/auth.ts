@@ -30,7 +30,7 @@ export const signup = async (req:Request, res:Response): Promise<any> =>{
 
     return res.status(201).json({ status: 201, data: newUser, msg: "User Register successfully." });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error during signup:", error);
     return res.status(500).json({ status: 500, message: "Internal Server Error" });
   }
 }

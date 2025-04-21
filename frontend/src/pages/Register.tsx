@@ -26,6 +26,8 @@ const Register: React.FC = () => {
   const password = watch('password');
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
+
+    console.log('Registering user with data:', data);
     try {
       const res = await registerUser ({
         name: data.name,

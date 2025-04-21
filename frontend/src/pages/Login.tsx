@@ -1,9 +1,10 @@
-// src/components/Login.tsx
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { BiSolidHide, BiSolidShow } from 'react-icons/bi';
 import { loginUser } from '../api/auth';
+import { useNavigate } from "react-router-dom";
+
 
 type LoginFormInputs = {
   email: string;
@@ -21,11 +22,14 @@ const Login: React.FC = () => {
 
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+    console.log('Login user with data:', data);
     try {
       const res = await loginUser(data);
-      const { token } = res.data;
+      const { token, userRole } = res.data;
       localStorage.setItem('token', token); 
+      localStorage.setItem('role', userRole);
       alert('Login successful!');
+      navigate('/dashboard'); 
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -36,6 +40,9 @@ const Login: React.FC = () => {
       }
     }
   };
+
+  const navigate = useNavigate();
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fdb0b6] via-[#f8efa5] to-[#8dbff0]">
