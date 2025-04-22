@@ -1,17 +1,63 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaHome, FaBook, FaUsers } from 'react-icons/fa';
 import { useAuthStore } from '../../store/authStore';
+import { MdOutlineTask } from 'react-icons/md';
 
-const Sidebar = () => {
-  const { user } = useAuthStore();
+const Sidebar: React.FC = () => {
+  const { user, logout } = useAuthStore();
 
   return (
-    <div className="w-64 bg-white h-screen p-4 shadow-lg">
-      <h2 className="text-xl font-bold mb-4">Better Tasks</h2>
-      <ul className="space-y-4">
-        <li><Link to="/dashboard">Dashboard</Link></li>
-        <li><Link to="/dashboard/tasks">Tasks</Link></li>
-        {user?.role === 'ADMIN' && <li><Link to="/dashboard/users">User Management</Link></li>}
-      </ul>
+    <div className="w-[280px] min-h-screen bg-[#1f2d3d] text-white flex flex-col justify-between p-4">
+      <div>
+        <h1 className="text-2xl text-[#2992dc] font-bold mb-6 text-center">Dashboard</h1>
+        <nav className="space-y-3">
+          <Link
+            to="/dashboard"
+            className="flex items-center bg-[#2992dc] mb-[10px] hover:bg-[#151d80] gap-[10px] px-[12px] py-[10px] mx-[9px] rounded-[9px] no-underline text-[#FFF]"
+          >
+            <FaHome />
+            Home
+          </Link>
+
+          <Link
+            to="/tasks"
+            className="flex items-center bg-[#2992dc] mb-[10px] hover:bg-[#151d80] gap-[10px] px-[12px] py-[10px] mx-[9px] rounded-[9px] no-underline text-[#FFF]"
+          >
+            <FaBook />
+            Tasks
+          </Link>
+
+          <Link
+            to="/createTasks"
+            className="flex items-center bg-[#2992dc] mb-[10px] hover:bg-[#151d80] gap-[10px] px-[12px] py-[10px] mx-[9px] rounded-[9px] no-underline text-[#FFF]"
+          >
+           <MdOutlineTask className='text-[20px]'/>
+            Create Tasks
+          </Link>
+
+          {/* {user?.role === 'ADMIN' && ( */}
+            <Link
+              to="/users"
+              className="flex items-center bg-[#2992dc] mb-[10px] hover:bg-[#151d80] gap-[10px] px-[12px] py-[10px] mx-[9px] rounded-[9px] no-underline text-[#FFF]"
+            >
+              <FaUsers />
+              Users
+            </Link>
+          {/* )} */}
+        </nav>
+      </div>
+      <div className="text-center mt-8">
+        <p className="text-sm text-[#FFF] mb-[10px]">
+          Welcome, <span className="font-semibold">{user?.role?.toLowerCase()}</span>
+        </p>
+        <button
+          onClick={logout}
+          className="bg-[#88569d] text-[#FFF] hover:bg-[#462c50] px-[40px] py-[10px] mb-[20px] rounded-[8px] border-none"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
