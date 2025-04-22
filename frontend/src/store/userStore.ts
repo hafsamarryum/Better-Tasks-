@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { create } from 'zustand';
+import { UserRole } from '../utilities/enum'
+import axiosInstance from '../api/axios';
 
-type Role = 'ADMIN' | 'MEMBER';
+type Role = UserRole.ADMIN | UserRole.MEMBER;
 
 interface User {
   id: string;
@@ -22,8 +24,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   fetchUsers: async () => {
     try {
-      const res = await axios.get('/users');
-      set({ users: res.data });
+      const res = await axiosInstance.get('/api/users/');
+      set({ users: res.data.data });
     } catch (err) {
       console.error('Error fetching users', err);
     }
