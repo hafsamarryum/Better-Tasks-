@@ -9,7 +9,6 @@ body{
    box-sizing: border-box;
    margin: auto;
    padding: auto;
-   /* background-color: #dcfce7; */
 }
 
 .font {
@@ -19,8 +18,18 @@ body{
    font-style: normal;
 }
 
+.tableImg {
+   background-image: url("../src/assets/images/tableBg.jpg");
+   width: 80%;
+   height: 65%;
+   object-fit: cover;
+   object-position: center;
+}
 
 .custom-scroll {
+   height: 10px;
+   border: 2px solid red;
+   overflow-y: auto;
    scrollbar-width: none; 
 }
 
