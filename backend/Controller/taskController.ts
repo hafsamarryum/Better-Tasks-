@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../DB/db.config";
-import { createTaskSchema, updateTaskSchema } from "../validations/taskValidation";
+import { createTaskSchema, updateStatusSchema, updateTaskSchema } from "../validations/taskValidation";
 import { Role } from "../generated/prisma";
 
   // create
@@ -13,11 +13,13 @@ export const createTask = async (req:Request, res:Response) =>{
 
       const {title, description, assigneeId} =req.body;
       const task = await prisma.task.create({
-        data:{ title, description, assigneeId, createdById: req.user.id}
+        data:{ title, description, assigneeId: Number(assigneeId), createdById: req.user.id}
       });
+
       return res.status(201).json({status: 201, msg: "Task created. ", task})
     
   } catch (error: any) {
+    console.error("Error creating task:", error);
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }
@@ -35,7 +37,7 @@ export const getAllTasks = async (_req:Request, res:Response) => {
  // show
 export const getMyTasks = async (req:Request, res:Response) => {
   try {
-    const tasks =await prisma.task.findMany({
+    const tasks =await prisma.task.findMany({ 
       where: {assigneeId: req.user.id},
       include: {createdBy: true}
     });
@@ -66,7 +68,7 @@ export const getMyTasks = async (req:Request, res:Response) => {
   // update task status
 export const updateTaskStatus = async (req:Request, res:Response) => {
   try {
-    const {error} = updateTaskSchema.validate(req.body);
+    const {error} = updateStatusSchema.validate(req.body);
     if (error) {
       return res.status(400).json({msg: error.message})
     }
@@ -80,6 +82,7 @@ export const updateTaskStatus = async (req:Request, res:Response) => {
     })
     return res.status(200).json({status:200, msg: "Task status updated successfully", updateTask})
   } catch (error: any) {
+    console.log("error during updating task status", error)
     res.status(500).json({ message: "Failed to fetch your tasks", error: error.message });
   }
 }
