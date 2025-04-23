@@ -63,13 +63,25 @@ const Tasks = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteTask(id);
-    fetchData();
+    try {
+      const res = await deleteTask(id);
+      alert(res.data.message || "Task deleted successfully.");
+      fetchData(); 
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const msg =
+          error.response?.data?.message || "Something went wrong. Please try again.";
+        alert(msg);
+      } else {
+        alert("Network error or server is not responding. Please try again later.");
+      }
+      console.error("Failed to delete task", error);
+    }
   };
 
   return (
     <div className="w-[890px] py-[20px] px-[60px] text-[#1e1f1c] flex flex-col justify-center items-center">
-      <div className="w-full flex flex-col justify-between items-center p-[0px] rounded-[15px] tableImg">
+    <div className="w-full flex flex-col justify-between items-center p-[0px] rounded-[15px] tableImg">
       <div className="w-full flex justify-between items-center bg-[#fff5] ">
         <div>
         <h1 className="text-2xl mb-[3px] pl-[10px] items-start">Tasks</h1>
@@ -90,7 +102,7 @@ const Tasks = () => {
         </div>
       </div>
 
-      <table className="w-[95%] rounded-[12px] p-[15px] pt-[0px] mb-[18px] border-collapse">
+      <table className="w-[95%] rounded-[12px] p-[15px] pt-[0px] my-[18px]  border-collapse">
         <thead className="bg-[#d6d2de]"> 
           <tr className=" text-left">
             <th className="p-[10px]">Title</th>
@@ -123,24 +135,24 @@ const Tasks = () => {
                 </td>
                 <td className="p-[10px] flex gap-[6px]">
                   {(user?.role === UserRole.ADMIN || task.createdBy === user?.id) && (
-                    <button className="bg-[#F59E0B] px-[20px] py-[4px] text-[#fff] rounded-[5px] border-none">
+                    <button className="bg-[#F59E0B] px-[20px] py-[5px] text-[#fff] rounded-[5px] border-none">
                       Edit
                     </button>
-                  )} 
-                  {user?.role === UserRole.ADMIN && (
+                  )}
+                  {/* {user?.role === UserRole.ADMIN && ( */}
                     <button
                       onClick={() => handleDelete(task.id)}
-                      className="bg-[#EF4444] px-[15px] py-[4px] text-[#fff] rounded-[5px] border-none"
+                      className="bg-[#EF4444] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
                     >
                       Delete
                     </button>
-                   )} 
+                   {/* )}  */}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="p-3 text-center">
+              <td colSpan={4} className="p-[16px] text-center">
                 No tasks available
               </td>
             </tr>

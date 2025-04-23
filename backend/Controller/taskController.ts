@@ -109,7 +109,7 @@ export const deleteTask = async (req: Request, res: Response) => {
 };
 
  // fetch tasks by id
- export const getTaskById = async (req: Request, res: Response) => {
+export const getTaskById = async (req: Request, res: Response) => {
   try {
     const taskId = Number(req.params.taskId);
 

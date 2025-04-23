@@ -2,12 +2,14 @@ import { Router } from "express";
 import UserRoutes from "./userRoutes.js";
 import authRoutes from "./auth.js";
 import taskRoutes from "./task.js";
+import roleRoutes from "./role.js";
 
 const router = Router();
 
-router.use('/auth', authRoutes)
+router.use('/auth', authRoutes);
 router.use("/users", UserRoutes);
-router.use("/tasks", taskRoutes)
+router.use("/tasks", taskRoutes);
+router.use("/", roleRoutes);
 
  //in the app.js
 router.get("/api", (req, res) => {

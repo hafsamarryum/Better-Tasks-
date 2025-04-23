@@ -3,6 +3,7 @@ const app:Express = express();
 import dotenv from "dotenv";
 import cors from "cors";
 import router from "./routes/index.js";
+import roleRoutes from "./routes/role.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 8000;

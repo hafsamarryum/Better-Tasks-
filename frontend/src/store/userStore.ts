@@ -1,7 +1,8 @@
-import axios from 'axios';
 import { create } from 'zustand';
 import { UserRole } from '../utilities/enum'
 import axiosInstance from '../api/axios';
+import axios from 'axios';
+import { changeUserRole } from '../api/endpoints/user';
 
 type Role = UserRole.ADMIN | UserRole.MEMBER;
 
@@ -15,7 +16,7 @@ interface User {
 interface UserStore {
   users: User[];
   fetchUsers: () => Promise<void>;
-  toggleUserRole: (id: string) => Promise<void>;
+  toggleUserRole: (id: string, newRole: Role) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 }
 
@@ -31,21 +32,48 @@ export const useUserStore = create<UserStore>((set, get) => ({
     }
   },
 
-  toggleUserRole: async (id) => {
+  toggleUserRole: async (id, newRole) => {
+    const user = get().users.find((u) => u.id === id);
+    if (!user) {
+      console.warn('User not found, likely already deleted');
+      return;
+    }
     try {
-      await axios.patch(`/users/${id}/role`);
-      get().fetchUsers();
+      await changeUserRole(id, newRole);
+      const updatedUsers = get().users.map((user) =>
+        user.id === id ? { ...user, role: newRole } : user
+      );
+      set({ users: updatedUsers });
     } catch (err) {
-      console.error('Error toggling role', err);
+      if (axios.isAxiosError(err) && err.response) {
+        if (err.response.status === 403) {
+          alert("You do not have permission to update user roles.");
+        } else {
+          const msg = err.response.data?.msg || "Something went wrong. Please try again.";
+          alert(msg);
+        }
+      } else {
+        alert("Network error or server is not responding. Please try again later.");
+      }
+      console.error("Failed to update user role", err);
     }
   },
 
   deleteUser: async (id) => {
     try {
-      await axios.delete(`/users/${id}`);
-      get().fetchUsers();
+      const res = await axiosInstance.delete(`/api/users/${id}`);
+      alert(res.data.msg);
+      set((state) => ({
+        users: state.users.filter((user) => user.id !== id),
+      }));
     } catch (err) {
-      console.error('Error deleting user', err);
+      if (axios.isAxiosError(err) && err.response) {
+        const msg = err.response.data?.msg || 'Something went wrong. Please try again.';
+        alert(msg);
+      } else {
+        alert('Network error or server is not responding. Please try again later.');
+      }
+      console.error('Failed to delete user', err);
     }
   },
 }));
