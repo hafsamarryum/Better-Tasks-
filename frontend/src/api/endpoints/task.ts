@@ -3,7 +3,7 @@ import axiosInstance from "../axios";
 export interface TaskData {
   title: string;
   description?: string;
-  assigneeId?: string;
+  assigneeId?: number;
   status?: string;
 }
 
@@ -31,4 +31,8 @@ export const updateTask = async (taskId: string, data: TaskData) => {
 
 export const deleteTask = async (taskId: string) => {
   return await axiosInstance.delete(`${PREFIX}/${taskId}`);
+};
+
+export const updateTaskAssignee = async (id: string, assigneeId: string) => {
+  return await axiosInstance.put(`/api/tasks/${id}/assignee`, { assigneeId });
 };

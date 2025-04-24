@@ -6,6 +6,6 @@ import { updateRole } from "../Controller/UserController";
 
 const roleRoutes:Router = Router()
 
-roleRoutes.put("/users/:userId/role" , authMiddleware as any, updateRole as any)  //, checkRole([Role.ADMIN]) as any
+roleRoutes.put("/users/:userId/role" , authMiddleware as any, checkRole([Role.ADMIN]) as any, updateRole as any)  
 
 export default roleRoutes;

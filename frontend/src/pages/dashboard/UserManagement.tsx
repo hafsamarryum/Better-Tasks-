@@ -31,7 +31,8 @@ export default function UserManagement() {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
+          {users
+          .map((u) => (
             <tr key={u.id} className="border-t">
               <td className="p-[10px] w-[50%]">{u.name}</td>
               <td className="p-[10px] w-[50%]">{u.email}</td>

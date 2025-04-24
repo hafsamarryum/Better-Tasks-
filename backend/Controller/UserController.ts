@@ -83,7 +83,7 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
         if (!user) {
           return res.status(404).json({ status: 404, msg: "User not found" });
         }
-        if (userId === currentUserId) {
+        if (Number(userId) !== currentUserId && req.user.role !== "ADMIN") {
           return res.status(400).json({
             status: 400,
             msg: "You cannot delete your own account while logged in.",
@@ -110,8 +110,6 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
   
     const { userId } = req.params;
     const { role } = req.body;
-  
-    console.log("Update Role API Hit 🚀", req.params, req.body);
     if (Number(userId) === req.user.id) {
       return res.status(403).json({ message: "You cannot change your own role." });
     }

@@ -4,6 +4,7 @@ import { createTask } from '../../api/endpoints/task';
 import bgImg from '../../assets/images/formBg.jpeg';
 
 interface TaskData {
+  id?: string;
   title: string;
   description: string;
   assignee: string;
@@ -16,7 +17,7 @@ interface User {
 
 const CreateTasks = () => {
   const { users, fetchUsers } = useUserStore();
-  
+
   const [taskData, setTaskData] = useState<TaskData>({
     title: '',
     description: '',
@@ -34,7 +35,7 @@ const CreateTasks = () => {
   ) => {
     setTaskData({ ...taskData, [e.target.name]: e.target.value });
   };
-
+  
   const handleCreateTask = async () => {
     if (!taskData.title || !taskData.assignee) {
       alert('Title and assignee are required!');
@@ -42,14 +43,13 @@ const CreateTasks = () => {
     }
 
     try {
-      await createTask({
-        title: taskData.title,
-        description: taskData.description,
-        assigneeId: taskData.assignee,
-      });
-      alert('Task created successfully!');
+        await createTask({
+          title: taskData.title,
+          description: taskData.description,
+        assigneeId: Number(taskData.assignee),
+        });
+        alert('Task created successfully!');
       setTaskData({ title: '', description: '', assignee: '' });
-       console.log("Task Data:", taskData)
     } catch (error) {
       console.error('Error creating task', error);
       alert('Failed to create task');

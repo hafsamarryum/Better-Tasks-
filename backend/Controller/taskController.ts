@@ -82,7 +82,6 @@ export const updateTaskStatus = async (req:Request, res:Response) => {
     })
     return res.status(200).json({status:200, msg: "Task status updated successfully", updateTask})
   } catch (error: any) {
-    console.log("error during updating task status", error)
     res.status(500).json({ message: "Failed to fetch your tasks", error: error.message });
   }
 }
@@ -125,5 +124,26 @@ export const getTaskById = async (req: Request, res: Response) => {
     res.status(200).json(task);
   } catch (err: any) {
     res.status(500).json({ message: "Failed to fetch task", error: err.message });
+  }
+};
+
+ // upadate assignee
+ export const updateAssignee = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { assigneeId } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: Number(assigneeId) } });
+    if (!user) return res.status(400).json({ message: "Assignee user not found" });
+
+    const updatedTaskAssignee = await prisma.task.update({
+      where: { id: Number(id) },
+      data: { assigneeId: Number(assigneeId) },
+    });
+  
+    res.status(200).json({ message: "Assignee updated successfully", task: updatedTaskAssignee });
+  } catch (error) {
+    console.error("Update assignee error:", error);
+    res.status(500).json({ message: "Failed to update assignee", error });
   }
 };

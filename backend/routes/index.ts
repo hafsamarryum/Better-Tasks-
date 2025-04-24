@@ -10,6 +10,7 @@ router.use('/auth', authRoutes);
 router.use("/users", UserRoutes);
 router.use("/tasks", taskRoutes);
 router.use("/", roleRoutes);
+router.use("/", taskRoutes);
 
  //in the app.js
 router.get("/api", (req, res) => {
