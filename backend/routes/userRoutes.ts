@@ -10,4 +10,5 @@ router.get("/", [authMiddleware as any], fetchUsers as any);
 router.get("/:id", showUser as any);
 router.delete("/:id", deleteUser as any);
 
+
 export default router;

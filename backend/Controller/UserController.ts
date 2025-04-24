@@ -77,11 +77,30 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
    // delete user
    export const deleteUser = async (req:Request, res:Response): Promise<any> =>{
       const userId = req.params.id;
-      await prisma.user.delete({
-        where: { id: Number(userId)},
-      });
-
-      return res.status(200).json({status:200,  msg: "User deleted successfully"})
+      const currentUserId = req.user?.id;
+      try {
+        const user = await prisma.user.findUnique({ where: { id: Number(userId) } });
+        if (!user) {
+          return res.status(404).json({ status: 404, msg: "User not found" });
+        }
+        if (Number(userId) !== currentUserId && req.user.role !== "ADMIN") {
+          return res.status(400).json({
+            status: 400,
+            msg: "You cannot delete your own account while logged in.",
+          });
+        }
+        await prisma.user.delete({ where: { id: Number(userId) }, });
+    
+        return res.status(200).json({ status: 200, msg: "User deleted successfully" });
+      } catch (error: any) {
+        console.error("Delete user error:", error.message);
+    
+        return res.status(500).json({
+          status: 500,
+          msg: "Failed to delete user. Possibly due to foreign key constraint.",
+          error: error.message,
+        });
+      }
    }; 
 
    // update role 
@@ -91,7 +110,6 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
   
     const { userId } = req.params;
     const { role } = req.body;
-  
     if (Number(userId) === req.user.id) {
       return res.status(403).json({ message: "You cannot change your own role." });
     }

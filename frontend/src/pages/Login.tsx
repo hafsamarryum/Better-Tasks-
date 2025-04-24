@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import { loginUser } from "../api/endpoints/auth";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 type LoginFormInputs = {
   email: string;
@@ -20,12 +21,12 @@ const Login: React.FC = () => {
   } = useForm<LoginFormInputs>();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    console.log("Login user with data:", data);
     try {
       const res = await loginUser(data);
-      const { token, userRole } = res.data;
+      const { token, userRole, user } = res.data;
       localStorage.setItem("token", token);
       localStorage.setItem("role", userRole);
+      useAuthStore.getState().setUser(user, token);
       alert("Login successfully!");
       navigate("/dashboard");
     } catch (error: unknown) {

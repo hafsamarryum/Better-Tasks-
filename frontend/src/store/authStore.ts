@@ -16,20 +16,28 @@ interface AuthState {
   setLoading: (state: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: localStorage.getItem("token"),
-  loading: true,
+export const useAuthStore = create<AuthState>((set) => {
+  const storedUser = localStorage.getItem("user");
+  const storedToken = localStorage.getItem("token");
 
-  setUser: (user, token) => {
-    localStorage.setItem("token", token);
-    set({ user, token, loading: false });
-  },
+  return {
+    user: storedUser ? JSON.parse(storedUser) : null,
+    token: storedToken,
+    loading: false,
 
-  logout: () => {
-    localStorage.removeItem("token");
-    set({ user: null, token: null, loading: false });
-  },
+    setUser: (user, token) => {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      set({ user, token, loading: false });
+    },
 
-  setLoading: (state) => set({ loading: state }),
-}));
+    logout: () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      set({ user: null, token: null, loading: false });
+    },
+
+    setLoading: (state) => set({ loading: state }),
+  };
+});
+
