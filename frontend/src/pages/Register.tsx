@@ -26,16 +26,14 @@ const Register: React.FC = () => {
   const password = watch("password");
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
-    console.log("Registering user with data:", data);
     try {
-      const res = await registerUser({
+       await registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
       });
 
       alert("User registered successfully!");
-      console.log(res.data);
       reset();
     } catch (error: unknown) {
       if (error instanceof Error) {
