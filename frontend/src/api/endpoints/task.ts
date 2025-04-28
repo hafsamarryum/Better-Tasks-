@@ -36,3 +36,8 @@ export const deleteTask = async (taskId: string) => {
 export const updateTaskAssignee = async (id: string, assigneeId: string) => {
   return await axiosInstance.put(`/api/tasks/${id}/assignee`, { assigneeId });
 };
+
+export const getActivitiesForTask = async (taskId: number | string) => {
+  const res = await axiosInstance.get(`/api/tasks/${taskId}/activities`);
+  return res.data.data;
+};

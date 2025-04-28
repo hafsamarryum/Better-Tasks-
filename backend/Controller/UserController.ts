@@ -48,34 +48,52 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
      const userId = req.params.id;
      const {name, email, password} = req.body;
 
-     await prisma.user.update({
-       where: {id:Number(userId)},
-       data: { name:name, email:email, password:password}})
+     const updateData: any = { name, email };
 
-       return res.status(200).json({status:200,  msg: "User updated successfully"})
+      if (password) {
+        updateData.password = await bcrypt.hash(password, 10);
+      }
+
+    const updatedUser = await prisma.user.update({
+       where: {id:Number(userId)},
+       data: updateData})
+
+       return res.status(200).json({status:200,  msg: "User updated successfully", data: updatedUser})
   };
 
   // fetch Users
   export const fetchUsers = async (_req:Request, res:Response): Promise<any> =>{
-    const users = await prisma.user.findMany({ select: { id: true, name: true, email: true, role: true } })
-
+    try {
+    const users = await prisma.user.findMany({ 
+      where: { isActive: true },
+      select: { id: true, name: true, email: true, role: true } })
     return res.status(200).json({ status: 200, data: users});
+  } catch (error: any) {
+    console.error("Fetch users error:", error.message);
+    return res.status(500).json({ status: 500, msg: "Failed to fetch users." });
+  }
   };
 
   // show user
   export const showUser = async (req:Request, res:Response): Promise<any> =>{
      const userId = req.params.id;
+     try {
      const user = await prisma.user.findFirst({
-      where:{
-        id:Number(userId)
-      }
+      where:{ id:Number(userId), isActive: true }
      })
+     if (!user) {
+      return res.status(404).json({ status: 404, msg: "User not found or deactivated" });
+    }
 
      return res.status(200).json({status: 200, data: user})
+    } catch (error: any) {
+      console.error("Fetch single user error:", error.message);
+      return res.status(500).json({ status: 500, msg: "Failed to fetch user." });
+    }
   };
  
    // delete user
-   export const deleteUser = async (req:Request, res:Response): Promise<any> =>{
+   export const deactivateUser = async (req:Request, res:Response): Promise<any> =>{
       const userId = req.params.id;
       const currentUserId = req.user?.id;
       try {
@@ -86,18 +104,23 @@ const createUser = async (req: Request, res: Response): Promise<any> => {
         if (Number(userId) !== currentUserId && req.user.role !== "ADMIN") {
           return res.status(400).json({
             status: 400,
-            msg: "You cannot delete your own account while logged in.",
+            msg: "You cannot delete another user's account unless you are an Admin.",
           });
         }
-        await prisma.user.delete({ where: { id: Number(userId) }, });
+        await prisma.user.update({
+          where: { id: Number(userId) },
+          data: { isActive: false },
+        });
+        const activeUsers = await prisma.user.findMany({
+          where: { isActive: true },
+          select: { id: true, name: true, email: true, role: true },
+        });
     
-        return res.status(200).json({ status: 200, msg: "User deleted successfully" });
+        return res.status(200).json({ status: 200, msg: "User deactivated successfully", data: activeUsers });
       } catch (error: any) {
-        console.error("Delete user error:", error.message);
-    
         return res.status(500).json({
           status: 500,
-          msg: "Failed to delete user. Possibly due to foreign key constraint.",
+          msg: "Failed to deactivate user.",
           error: error.message,
         });
       }

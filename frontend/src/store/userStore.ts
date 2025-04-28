@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { UserRole } from '../utilities/enum'
 import axiosInstance from '../api/axios';
 import axios from 'axios';
-import { changeUserRole } from '../api/endpoints/user';
+import { changeUserRole, updateUser } from '../api/endpoints/user';
 
 type Role = UserRole.ADMIN | UserRole.MEMBER;
 
@@ -11,6 +11,7 @@ interface User {
   name: string;
   email: string;
   role: Role;
+  isActive: boolean;
 }
 
 interface UserStore {
@@ -18,6 +19,7 @@ interface UserStore {
   fetchUsers: () => Promise<void>;
   toggleUserRole: (id: string, newRole: Role) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
+  updateUserDetails: (id: string, updatedData: { name?: string; email?: string; password?: string }) => Promise<void>; 
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -61,10 +63,11 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   deleteUser: async (id) => {
     try {
-      const res = await axiosInstance.delete(`/api/users/${id}`);
+      const res = await axiosInstance.patch(`/api/users/${id}/deactivate`);
       alert(res.data.msg);
       set((state) => ({
-        users: state.users.filter((user) => user.id !== id),
+        users: state.users.filter((user) =>
+           user.id !== id ),
       }));
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
@@ -74,6 +77,20 @@ export const useUserStore = create<UserStore>((set, get) => ({
         alert('Network error or server is not responding. Please try again later.');
       }
       console.error('Failed to delete user', err);
+    }
+  },
+
+  updateUserDetails: async (id, updatedData) => {
+    try {
+      await updateUser(id, updatedData);
+      set((state) => ({
+        users: state.users.map((user) =>
+          user.id === id ? { ...user, ...updatedData } : user
+        ),
+      }));
+    } catch (err) {
+      console.error('Error updating user details', err);
+      throw err;
     }
   },
 }));

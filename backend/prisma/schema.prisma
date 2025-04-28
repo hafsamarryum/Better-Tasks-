@@ -34,6 +34,7 @@ model User {
   tasks Task[] @relation("AssignedTasks")
   createdTasks Task[] @relation("CreatedTasks")
   activities    Activity[] @relation("UserActivities")
+  isActive Boolean @default(true)
   created_at DateTime @default(now())
 }
 

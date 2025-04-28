@@ -1,11 +1,21 @@
 import { useUserStore } from '../../store/userStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { UserRole } from '../../utilities/enum';
+import EditModal from './EditModal';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+}
 
 export default function UserManagement() {
   const { users, fetchUsers, toggleUserRole, deleteUser } = useUserStore();
   const { user } = useAuthStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     // if (user?.role === 'ADMIN') {
@@ -16,6 +26,16 @@ export default function UserManagement() {
   // if (user?.role !== 'ADMIN') {
   //   return <div className="text-red-500 p-4">Access Denied</div>;
   // }
+
+  const handleEditClick = (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
 
   return (
     <div className="w-[890px] py-[20px] px-[60px] text-[#1e1f1c] flex flex-col justify-center items-center">
@@ -32,6 +52,7 @@ export default function UserManagement() {
         </thead>
         <tbody>
           {users
+          // .filter((u) => u.isActive)
           .map((u) => (
             <tr key={u.id} className="border-t">
               <td className="p-[10px] w-[50%]">{u.name}</td>
@@ -46,19 +67,37 @@ export default function UserManagement() {
                   <option value={UserRole.MEMBER}>MEMBER</option>
                 </select>
               </td>
-              <td className="p-[15px] flex gap-2">
+              <td className="p-[15px] flex gap-[10px]">
                 <button
                   onClick={() => deleteUser(u.id)}
                   className="bg-[#EF4444] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
                 >
                   Delete
                 </button>
+                <button
+                    onClick={() => handleEditClick(u)}
+                    className="bg-[#4CAF50] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
+                  >
+                    Edit
+                  </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+    {isModalOpen && (
+        <EditModal
+          user={selectedUser}
+          onClose={handleCloseModal}
+          onSave={(updatedUser) => {
+            // handle save logic, e.g., make an API call to update the user
+            console.log(updatedUser);
+            handleCloseModal();
+          }}
+        />
+      )}
+     
   </div>
   );
 }

@@ -105,8 +105,8 @@ const TaskDrawer = ({ task, onClose }: TaskDrawerProps) => {
             <h3 className="text-xl text-[#2792dc] mt-[4px]">Activity Log</h3>
               
 
-            {activities.length > 0 ? (
-    activities.map((activity) => (
+    {activities.length > 0 ? (
+       activities.map((activity) => (
       <div key={activity.id} className="m-[0px] p-[20px] bg-[#334155] rounded">
         <div className="text-sm font-semibold">{activity.actor.name} {activity.action.toLowerCase()} the work item {formatDistanceToNow(new Date(activity.createdAt))} ago</div>
       
