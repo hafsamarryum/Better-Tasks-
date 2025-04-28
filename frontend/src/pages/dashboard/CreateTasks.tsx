@@ -2,6 +2,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { createTask } from '../../api/endpoints/task';
 import bgImg from '../../assets/images/formBg.jpeg';
+import { useNavigate } from 'react-router-dom';
 
 interface TaskData {
   id?: string;
@@ -17,6 +18,7 @@ interface User {
 
 const CreateTasks = () => {
   const { users, fetchUsers } = useUserStore();
+  const Navigate = useNavigate()
 
   const [taskData, setTaskData] = useState<TaskData>({
     title: '',
@@ -50,6 +52,7 @@ const CreateTasks = () => {
         });
         alert('Task created successfully!');
       setTaskData({ title: '', description: '', assignee: '' });
+      Navigate('/tasks');
     } catch (error) {
       console.error('Error creating task', error);
       alert('Failed to create task');

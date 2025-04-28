@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
 import {deleteTask,getAllTasks,getMyTasks,updateTaskAssignee,updateTaskStatus,} from "../../api/endpoints/task";
-// import { useAuthStore } from "../../store/authStore";
 import { FilterType, TaskStatus } from "../../utilities/enum";
 import axios from "axios";
-// import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/userStore";
-import TaskDrawer from "./TaskDrawer";
+import TaskDrawer, { Activity } from "./TaskDrawer";
 
 export type Task = {
   id: string;
   title: string;
   description: string;
   assigneeId: string;
-  assignee?: {
-    name: string;
-  };
-  status: TaskStatus;
+  assignee?: {  name: string; };
+  status?: TaskStatus;
   createdBy: string;
+  activities?: Activity[];
 };
 
 interface User {
@@ -25,19 +22,10 @@ interface User {
 }
 
 const Tasks = () => {
-  // const navigate = useNavigate();
-  // const { user } = useAuthStore();
-    const { users, fetchUsers } = useUserStore();
+  const { users, fetchUsers } = useUserStore();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
-
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-
-  const handleEdit = (task: Task) => {
-    setEditingTask(task); // Open the drawer with task data
-  };
-
-  const closeDrawer = () => setEditingTask(null);
 
   const fetchData = async () => {
     try {
@@ -65,6 +53,12 @@ const Tasks = () => {
   useEffect(() => {
     if (users.length === 0) fetchUsers();
   },[users]);
+
+  const handleEdit = (task: Task) => setEditingTask(task);
+  const closeDrawer = () => {
+    setEditingTask(null);
+    fetchData();
+  };
 
   const handleStatusChange = async (id: string, status: TaskStatus) => {
     try {
@@ -154,30 +148,26 @@ const Tasks = () => {
                 <td className="p-[10px] w-[10%]">{task.id}</td>
                 <td className="p-[10px] w-[40%]">{task.title}</td>
                 <td className="p-[10px] w-[10%]">
-
-                <select
-          name="assigneeId"
-          value={task.assigneeId}
-          onChange={(e) => handleAssigneeChange(task.id, e.target.value)}
-          className="py-[5px] pr-[0px] pl-[5px] rounded-[5px] border-none bg-[#f3f4f6]"
-        >
-          <option value="" disabled>Select Assignee</option>
-          {users.map((user: User) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
-        </td>
+            <select
+                name="assigneeId"
+                value={task.assigneeId}
+                onChange={(e) => handleAssigneeChange(task.id, e.target.value)}
+                className="py-[5px] pr-[0px] pl-[5px] rounded-[5px] border-none bg-[#f3f4f6]"
+              >
+                <option value="" disabled>Select Assignee</option>
+                {users.map((user: User) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </td>
 
                 <td className="p-[10px] w-[10%]">
                   <select
                     value={task.status}
                     onChange={(e) =>
-                      handleStatusChange(
-                        task.id,
-                        e.target.value as TaskStatus
-                      )
+                      handleStatusChange(task.id,e.target.value as TaskStatus)
                     }
                     className="py-[5px] pr-[0px] pl-[5px] rounded-[5px] border-none bg-[#f3f4f6]"
                   >
@@ -186,42 +176,18 @@ const Tasks = () => {
                     <option value={TaskStatus.DONE}>Done</option>
                   </select>
                 </td>
-                <td className="p-[10px] flex gap-[6px]">
-                  {/* {(user?.role === UserRole.ADMIN || task.createdBy === user?.id) && ( */}
-                    {/* <button
-                     onClick={() =>
-                      navigate('/createTasks', {
-                        state: { task: {
-                          id: task.id,
-                          title: task.title,
-                          description: task.description,
-                          assigneeId: task.assigneeId,
-                        } }
-                      })
-                    }
-                    className="bg-[#F59E0B] px-[20px] py-[5px] text-[#fff] rounded-[5px] border-none">
-                      Edit
-                    </button> */}
-
-
-                  {/* Inside the <td> with Edit button */}
-<button
-  onClick={() => handleEdit(task)}
-  className="bg-[#F59E0B] px-[20px] py-[5px] text-[#fff] rounded-[5px] border-none"
->
-  Edit
-</button>
-
-
-
-
-
-                   {/* )}  */}
+                <td className="w-[100%] py-[10px] px-[5px]">
+           {/* {(user?.role === UserRole.ADMIN || task.createdBy === user?.id) && ( */}
+                  <button
+                    onClick={() => handleEdit(task)}
+                    className="bg-[#F59E0B] px-[20px] py-[5px] text-[#fff] rounded-[5px] border-none mr-[6px]">
+                    Edit
+                  </button>
+               {/* )}  */}
                   {/* {user?.role === UserRole.ADMIN && ( */}
                     <button
                       onClick={() => handleDelete(task.id)}
-                      className="bg-[#EF4444] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
-                    >
+                      className="bg-[#EF4444] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none">
                       Delete
                     </button>
                    {/* )}  */}
@@ -239,10 +205,9 @@ const Tasks = () => {
       </table>
       </div>
       {editingTask && (
-  <TaskDrawer task={editingTask} onClose={closeDrawer} />
-)}
-
-    </div>
+        <TaskDrawer task={editingTask} onClose={closeDrawer} />
+      )}
+  </div>
   );
 };
 

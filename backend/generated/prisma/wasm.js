@@ -136,14 +136,38 @@ exports.Prisma.TaskScalarFieldEnum = {
   created_at: 'created_at'
 };
 
+exports.Prisma.ActivityScalarFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  taskId: 'taskId',
+  action: 'action',
+  payload: 'payload',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
@@ -158,7 +182,8 @@ exports.TaskStatus = exports.$Enums.TaskStatus = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Task: 'Task'
+  Task: 'Task',
+  Activity: 'Activity'
 };
 
 /**
