@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { UserRole } from '../utilities/enum'
 import axiosInstance from '../api/axios';
 import axios from 'axios';
+import { useAuthStore } from './authStore'; 
 import { changeUserRole, updateUser } from '../api/endpoints/user';
 
 type Role = UserRole.ADMIN | UserRole.MEMBER;
@@ -62,9 +63,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
   },
 
   deleteUser: async (id) => {
+    const { user, logout } = useAuthStore.getState();
     try {
       const res = await axiosInstance.patch(`/api/users/${id}/deactivate`);
       alert(res.data.msg);
+      if (user?.id === id) {
+        logout();
+        return;
+      }
       set((state) => ({
         users: state.users.filter((user) =>
            user.id !== id ),

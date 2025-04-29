@@ -18,14 +18,8 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // if (user?.role === 'ADMIN') {
       fetchUsers();
-    // }
   }, [user]);
-
-  // if (user?.role !== 'ADMIN') {
-  //   return <div className="text-red-500 p-4">Access Denied</div>;
-  // }
 
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
@@ -51,9 +45,7 @@ export default function UserManagement() {
           </tr>
         </thead>
         <tbody>
-          {users
-          // .filter((u) => u.isActive)
-          .map((u) => (
+          {users.map((u) => (
             <tr key={u.id} className="border-t">
               <td className="p-[10px] w-[50%]">{u.name}</td>
               <td className="p-[10px] w-[50%]">{u.email}</td>
@@ -67,29 +59,34 @@ export default function UserManagement() {
                   <option value={UserRole.MEMBER}>MEMBER</option>
                 </select>
               </td>
-              <td className="p-[15px] flex gap-[10px]">
+              <td>
+              {user?.id !== u.id && (
                 <button
                   onClick={() => deleteUser(u.id)}
                   className="bg-[#EF4444] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
                 >
                   Delete
                 </button>
+              )}
+                {user?.id === u.id && (
                 <button
                     onClick={() => handleEditClick(u)}
-                    className="bg-[#4CAF50] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
+                    className="bg-[#4CAF50] px-[23px] py-[6px] text-[#fff] rounded-[5px] border-none"
                   >
                     Edit
                   </button>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-    {isModalOpen && (
+    {isModalOpen &&selectedUser &&(
         <EditModal
           user={selectedUser}
           onClose={handleCloseModal}
+          showDeleteButton={user?.id === selectedUser.id}
           onSave={(updatedUser) => {
             // handle save logic, e.g., make an API call to update the user
             console.log(updatedUser);

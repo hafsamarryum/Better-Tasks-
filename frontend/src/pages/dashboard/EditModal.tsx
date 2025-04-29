@@ -15,11 +15,12 @@ interface EditModalProps {
   user: User | null;
   onClose: () => void;
   onSave: (updatedUser: { username: string; email: string; password: string; role: string }) => void;
+  showDeleteButton: boolean;
 }
 
 
-const EditModal: React.FC<EditModalProps> = ({ user, onClose}) => {
-  const { updateUserDetails, fetchUsers } = useUserStore();
+const EditModal: React.FC<EditModalProps> = ({ user, onClose, showDeleteButton}) => {
+  const { updateUserDetails, fetchUsers, deleteUser } = useUserStore();
   const loggedInUserRole = useAuthStore((state) => state.user?.role);
 
   const [name, setName] = useState(user?.name || '');
@@ -48,50 +49,61 @@ const EditModal: React.FC<EditModalProps> = ({ user, onClose}) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteUser(user.id);
+      onClose();
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      alert('Failed to delete user. Please try again.');
+    }
+  };
+
 
   return (
     <div className='absolute top-[0px] bottom-[0px] left-[0px] w-[100%] h-[100%] flex justify-center items-center z-50 bg-[#16223080] bg-opacity-[20px] '>
     <div className="fixed w-[100%] h-[100%] inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-[#FFF] rounded-[12px] w-[500px] p-[30px] shadow-lg border border-gray-300">
-        <h2 className="text-2xl font-semibold text-[#1e1f1c] mb-[20px] text-center">Edit User</h2>
-        <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-[20px]">
-          <div>
-            <label className="block text-[#1e1f1c] text-[14px] mb-[5px]">Username</label>
+      <div className="bg-[#324963] rounded-[12px] w-[350px] p-[20px] shadow-lg">
+        <h2 className="text-2xl font-semibold text-[#1e1f1c] my-[5px] text-center">Edit User</h2>
+        <form onSubmit={(e: FormEvent) => e.preventDefault()} className="space-y-[15px]">
+          <div className='flex flex-col gap-[5px]'>
+            <label className="block text-[#1e1f1c] text-[16px] mb-[0px] pl-[4px]"><b>Username</b></label>
             <input
-              type="text"
+              type="text"     
               name="username"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+              className="w-[325px] px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] bg-[#d6d2de] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
             />
           </div>
-          <div>
-            <label className="block text-[#1e1f1c] text-[14px] mb-[5px]">Email</label>
+          <div className='flex flex-col gap-[5px]'>
+            <label className="block text-[#1e1f1c] text-[16px] mb-[0px] pl-[4px]"><b>Email</b></label>
             <input
               type="email"
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+              className="w-[325px] px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] bg-[#d6d2de] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
             />
           </div>
-          <div>
-            <label className="text-[#1e1f1c] text-[14px] mb-[5px]">Password</label>
+          <div className='flex flex-col gap-[5px]'>
+            <label className="block text-[#1e1f1c] text-[16px] mb-[0px] pl-[4px]"><b>Password</b></label>
             <input
               type="password"
               name="password"
+              placeholder='******'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+              className="w-[325px] px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] bg-[#d6d2de] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
             />
           </div>
-          <div>
-            <label className="text-[#1e1f1c] text-[14px] mb-[5px]">Role</label>
+          <div className='flex flex-col gap-[5px]'>
+            <label className="block text-[#1e1f1c] text-[16px] mb-[0px] pl-[4px]"><b>Role</b></label>
             <select
               name="role"
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+              className="w-[350px] px-[12px] py-[8px] border border-[#d1d5db] rounded-[8px] bg-[#d6d2de] text-[#1e1f1c] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
               disabled={loggedInUserRole !== UserRole.ADMIN}
             >
               <option value="admin">Admin</option>
@@ -99,17 +111,28 @@ const EditModal: React.FC<EditModalProps> = ({ user, onClose}) => {
             </select>
           </div>
           <div className="flex justify-between mt-[20px]">
+            <div className='flex gap-[4px]'>
             <button
               type="button"
               onClick={handleSave}
-              className="bg-[#4CAF50] border-none py-[10px] px-[20px] rounded-[8px] shadow-md hover:bg-[#45a049] focus:outline-none focus:ring-2 focus:ring-[#45a049]"
+              className="bg-[#4CAF50] border-none py-[10px] px-[10px] rounded-[8px] shadow-md hover:bg-[#45a049] focus:outline-none focus:ring-2 focus:ring-[#45a049]"
             >
               Save Changes
             </button>
+            {showDeleteButton && (
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="bg-[#EF4444] border-none py-[10px] px-[20px] rounded-[8px] shadow-md hover:bg-[#dc2626] focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
             <button
               type="button"
               onClick={onClose}
-              className="bg-[#EF4444] border-none py-[10px] px-[20px] rounded-[8px] shadow-md hover:bg-[#dc2626] focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              className="bg-[#b67534] border-none py-[10px] px-[20px] rounded-[8px] shadow-md hover:bg-[#69431e] focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
             >
               Close
             </button>
