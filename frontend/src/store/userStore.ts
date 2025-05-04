@@ -4,6 +4,7 @@ import axiosInstance from '../api/axios';
 import axios from 'axios';
 import { useAuthStore } from './authStore'; 
 import { changeUserRole, updateUser } from '../api/endpoints/user';
+import { toast } from 'react-toastify';
 
 type Role = UserRole.ADMIN | UserRole.MEMBER;
 
@@ -50,13 +51,13 @@ export const useUserStore = create<UserStore>((set, get) => ({
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         if (err.response.status === 403) {
-          alert("You do not have permission to update user roles.");
+          toast.warning("You do not have permission to update user roles.");
         } else {
           const msg = err.response.data?.msg || "Something went wrong. Please try again.";
-          alert(msg);
+           toast.error(msg);
         }
       } else {
-        alert("Network error or server is not responding. Please try again later.");
+         toast.error("Network error or server is not responding.");
       }
       console.error("Failed to update user role", err);
     }
@@ -66,7 +67,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     const { user, logout } = useAuthStore.getState();
     try {
       const res = await axiosInstance.patch(`/api/users/${id}/deactivate`);
-      alert(res.data.msg);
+      toast.success(res.data.msg);
       if (user?.id === id) {
         logout();
         return;
@@ -78,9 +79,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         const msg = err.response.data?.msg || 'Something went wrong. Please try again.';
-        alert(msg);
+        toast.error(msg);
       } else {
-        alert('Network error or server is not responding. Please try again later.');
+        toast.error('Network error or server is not responding. Please try again later.');
       }
       console.error('Failed to delete user', err);
     }

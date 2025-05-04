@@ -1,8 +1,9 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useUserStore } from '../../store/userStore';
 import { createTask } from '../../api/endpoints/task';
-import bgImg from '../../assets/images/formBg.jpeg';
+import bgImg from '../../assets/images/formTask.png';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface TaskData {
   id?: string;
@@ -40,7 +41,7 @@ const CreateTasks = () => {
   
   const handleCreateTask = async () => {
     if (!taskData.title || !taskData.assignee) {
-      alert('Title and assignee are required!');
+      toast.warning('Title and assignee are required!');
       return;
     }
 
@@ -50,24 +51,26 @@ const CreateTasks = () => {
           description: taskData.description,
         assigneeId: Number(taskData.assignee),
         });
-        alert('Task created successfully!');
+        toast.success('Task created successfully!');
       setTaskData({ title: '', description: '', assignee: '' });
+      setTimeout(() => {
       Navigate('/tasks');
+      }, 1000);
     } catch (error) {
       console.error('Error creating task', error);
-      alert('Failed to create task');
+      toast.error('Failed to create task');
     }
   };
 
   return (
-    <div className="w-[890px] max-w-2xl mx-auto flex flex-col justify-center items-center p-[10px] bg-[#fefefe]">
-      <div className="w-[600px] rounded-[12px] backdrop-blur-md shadow-md mb-[10px] p-[32px] pb-[20px] flex flex-col justify-center items-center border-[#e5e7eb] border-[1px] bg-[rgba(255,255,255,0.6)]">
+    <div className="w-[1000px] max-w-2xl mx-auto flex flex-col justify-center items-center p-[10px] bg-[#697e8e] border">
+      <div className="w-[600px] rounded-[12px] backdrop-blur-md shadow-md mb-[10px] p-[32px] pb-[20px] flex flex-col justify-center items-center border-[#] bg-[#1f2d3d] bg-opacity-0.5">
         <img
           src={bgImg}
           alt="form banner"
-          className="w-[600px] h-[200px] object-cover rounded-[12px] mb-[24px]"
+          className="w-[600px] h-[250px] object-cover rounded-[12px] mb-[24px]"
         />
-        <h1 className="text-[30px] mt-[0px] mb-[24px] text-[#1f2937]">Create a Task</h1>
+        
 
         <input
           type="text"
@@ -75,7 +78,7 @@ const CreateTasks = () => {
           placeholder="Task Title"
           value={taskData.title}
           onChange={handleChange}
-          className="w-[90%] px-[15px] py-[10px] mb-[10px] border border-[#d1d5db] rounded-[8px] shadow-sm focus:outline-none focus:ring-2 bg-[#ffffff] text-[#111827]"
+          className="w-[90%] px-[15px] py-[10px] mb-[10px] border border-[#d1d5db] rounded-[8px] shadow-sm focus:outline-none focus:ring-2 bg-[rgba(255,255,255,0.6)] text-[#11182c] placeholder:text-[#11182c]"
         />
 
         <textarea
@@ -83,14 +86,14 @@ const CreateTasks = () => {
           placeholder="Task Description"
           value={taskData.description}
           onChange={handleChange}
-          className="w-[90%] px-[16px] py-[12px] mb-[10px] border border-[#d1d5db] rounded-[8px] shadow-sm resize-none focus:outline-none focus:ring-2 bg-[#ffffff] text-[#111827]"
+          className="w-[90%] px-[16px] py-[12px] mb-[10px] border border-[#d1d5db] rounded-[8px] shadow-sm resize-none focus:outline-none focus:ring-2 bg-[rgba(255,255,255,0.6)] text-[#11182c] placeholder:text-[#11182c]"
         />
 
         <select
           name="assignee"
           value={taskData.assignee}
           onChange={handleChange}
-          className="w-[95%] px-[16px] py-[10px] mb-[24px] border border-[#d1d5db] rounded-[8px] shadow-sm focus:outline-none focus:ring-2 bg-[#ffffff] text-[#111827]"
+          className="w-[95%] px-[16px] py-[10px] mb-[24px] border border-[#d1d5db] rounded-[8px] shadow-sm focus:outline-none focus:ring-2 bg-[rgba(255,255,255,0.6)] text-[#111827]"
         >
           <option value="" disabled>
             Select Assignee
@@ -104,7 +107,7 @@ const CreateTasks = () => {
 
         <button
           onClick={handleCreateTask}
-          className="bg-[#16aa52] text-[#FFFFFF] px-[35px] py-[10px] rounded-[8px] border-none hover:bg-[#0c5d2d] transition duration-200 shadow-md cursor-pointer"
+          className="bg-[#2fbecf] text-[#FFFFFF] px-[35px] py-[10px] rounded-[8px] border-none hover:bg-[#1f7984] transition duration-200 shadow-md cursor-pointer"
         >
           SUBMIT
         </button>

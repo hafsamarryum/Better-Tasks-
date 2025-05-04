@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getActivitiesForTask, updateTask } from "../../api/endpoints/task";
 import { Task } from "./Tasks";
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'react-toastify';
 
 type TaskDrawerProps = {
   task: Task | null;
@@ -36,6 +37,12 @@ const TaskDrawer = ({ task, onClose }: TaskDrawerProps) => {
   };
 
   useEffect(() => {
+    if (task?.activities) {
+      setActivities(task.activities);
+    }
+  }, [task?.activities]);
+
+  useEffect(() => {
     fetchActivities();
   }, [task?.id]);
 
@@ -50,12 +57,12 @@ const TaskDrawer = ({ task, onClose }: TaskDrawerProps) => {
   const handleUpdate = async () => {
     try {
       await updateTask(task.id, { title, description });
-      alert("Task updated successfully!");
+      toast.success("Task updated successfully!");
       await fetchActivities();
       onClose();
     } catch (error) {
       console.error("Failed to update task:", error);
-      alert("Failed to update task.");
+      toast.error("Failed to update task.");
     }
   };
 
@@ -63,17 +70,17 @@ const TaskDrawer = ({ task, onClose }: TaskDrawerProps) => {
 
 
   return (
-    <div className="w-[100%] h-[100%] fixed flex top-0 left-0 z-50 mr-[40px]">
+    <div className="w-[100%] h-[100%] absolute flex top-[0px] left-[0px] z-50 mr-[40px]  border-[#2992dc]">
       <div className="flex-1" onClick={onClose} />
-      <div className="ml-auto w-[600px] h-[100%] bg-[#1f2d3d] text-[#FFF] p-[20px] pt-[0px] shadow-2xl relative overflow-y-auto">
+      <div className="ml-auto w-auto h-[100%] bg-[#1f2d3d] text-[#FFF] p-[20px] pt-[0px] pr-[0px] pb-[0px] shadow-2xl relative overflow-y-auto">
         <button
-          className="absolute top-4 right-4 text-[#2792dc] text-[30px] font-bold bg-[#1f2d3d] border-none"
+          className="absolute top-4 right-4 text-[#FFF] text-[30px] font-bold bg-[#1f2d3d] border-none"
           onClick={onClose}>
           &times;
         </button>
 
         <div className="w-[480px] flex flex-col gap-[10px] p-[10px] pt-[0px] mr-[20px]">
-        <h2 className="mb-[0px] mt-[40px] text-[#2792dc] text-2xl">Task Details</h2>
+        <h2 className="mb-[0px] mt-[40px] text-center text-[#FFF] text-2xl bg-[#fff5] py-[12px]">TASK DETAILS</h2>
           <div  className="pl-[7px]"><strong>ID:</strong> {task.id}</div>
           <input
         type="text"
@@ -100,19 +107,19 @@ const TaskDrawer = ({ task, onClose }: TaskDrawerProps) => {
         </div>
 
         
-          <div className="w-[480px] flex flex-col gap-[10px] p-[10px] m-[20px] mt-[0px]">
+          <div className="w-[480px] flex flex-col gap-[10px] p-[10px] m-[20px] mt-[0px] mb-[0px]">
           <hr className="w-[100%]" />
             <h3 className="text-xl text-[#2792dc] mt-[4px]">Activity Log</h3>
               
 
-    {activities.length > 0 ? (
+    {activities?.length > 0 ? (
        activities.map((activity) => (
-      <div key={activity.id} className="m-[0px] p-[20px] bg-[#334155] rounded">
+      <div key={activity?.id} className="m-[0px] p-[20px] bg-[#334155] rounded">
         <div className="text-sm font-semibold">{activity.actor.name} {activity.action.toLowerCase()} the work item {formatDistanceToNow(new Date(activity.createdAt))} ago</div>
       
-        {activity.payload && (
+        {activity?.payload && (
           <div className="mt-2 text-xs">
-            {Object.entries(activity.payload).map(([key, value]) => (
+            {Object.entries(activity?.payload).map(([key, value]) => (
               <div key={key}>
                 {key}: {typeof value === 'object' ? `${value.from} → ${value.to}` : value}
               </div>
