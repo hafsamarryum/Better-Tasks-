@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import {deleteTask,getAllTasks,getMyTasks,updateTaskAssignee,updateTaskStatus,} from "../../api/endpoints/task";
-// import { useAuthStore } from "../../store/authStore";
 import { FilterType, TaskStatus } from "../../utilities/enum";
 import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import "../../index.css";
+import { useAuthStore } from "../../store/authStore";
 import { useUserStore } from "../../store/userStore";
-import TaskDrawer from "./TaskDrawer";
+import TaskDrawer, { Activity } from "./TaskDrawer";
+import { UserRole } from "../../utilities/enum";
+import { toast } from 'react-toastify';
 
 export type Task = {
   id: string;
   title: string;
   description: string;
   assigneeId: string;
-  assignee?: {
-    name: string;
-  };
-  status: TaskStatus;
+  assignee?: {  name: string; };
+  status?: TaskStatus;
   createdBy: string;
+  activities?: Activity[];
 };
 
 interface User {
@@ -25,19 +26,11 @@ interface User {
 }
 
 const Tasks = () => {
-  // const navigate = useNavigate();
-  // const { user } = useAuthStore();
-    const { users, fetchUsers } = useUserStore();
+  const {users, fetchUsers } = useUserStore();
+  const { user } = useAuthStore();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
-
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-
-  const handleEdit = (task: Task) => {
-    setEditingTask(task); // Open the drawer with task data
-  };
-
-  const closeDrawer = () => setEditingTask(null);
 
   const fetchData = async () => {
     try {
@@ -54,6 +47,7 @@ const Tasks = () => {
       }
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
+      toast.error("Failed to fetch tasks. "+ error);
       setTasks([]);
     }
   };
@@ -66,6 +60,12 @@ const Tasks = () => {
     if (users.length === 0) fetchUsers();
   },[users]);
 
+  const handleEdit = (task: Task) => setEditingTask(task);
+  const closeDrawer = () => {
+    setEditingTask(null);
+    fetchData();
+  };
+
   const handleStatusChange = async (id: string, status: TaskStatus) => {
     try {
       await updateTaskStatus(id, status);
@@ -73,10 +73,10 @@ const Tasks = () => {
     }catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Error updating status:", error.response?.data || error.message);
-        alert("Failed to update task status.");
+        toast.error("Failed to update task status.");
       } else {
         console.error("Unexpected error:", error);
-        alert("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.");
       }
     }
   };
@@ -84,15 +84,15 @@ const Tasks = () => {
   const handleDelete = async (id: string) => {
     try {
       const res = await deleteTask(id);
-      alert(res.data.message || "Task deleted successfully.");
+      toast.success(res.data.message || "Task deleted successfully.");
       fetchData(); 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const msg =
           error.response?.data?.message || "Something went wrong. Please try again.";
-        alert(msg);
+        toast.error(msg);
       } else {
-        alert("Network error or server is not responding. Please try again later.");
+        toast.error("Network error or server is not responding. Please try again later.");
       }
       console.error("Failed to delete task", error);
     }
@@ -102,12 +102,12 @@ const Tasks = () => {
     try {
       await updateTaskAssignee(taskId, newAssigneeId);
       fetchData(); 
-    alert("Assignee updated successfully.");
+      toast.success("Assignee updated successfully.");
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || "Failed to update assignee.");
+        toast.error(error.response?.data?.message || "Failed to update assignee.");
       } else {
-        alert("Unexpected error while updating assignee.");
+        toast.error("Unexpected error while updating assignee.");
       }
       console.error("Assignee update error:", error);
     }
@@ -115,11 +115,11 @@ const Tasks = () => {
   
 
   return (
-    <div className="w-[890px] py-[20px] px-[60px] text-[#1e1f1c] flex flex-col justify-center items-center">
-    <div className="w-full flex flex-col justify-between items-center p-[0px] rounded-[15px] tableImg">
-      <div className="w-full flex justify-between items-center bg-[#fff5] ">
-        <div>
-        <h1 className="text-2xl mb-[3px] pl-[10px] items-start">Tasks</h1>
+    <div className="w-[890px] py-[20px] px-[60px] flex flex-col justify-center items-center dashBoardImg ">
+    <div className="w-full flex flex-col justify-between items-center p-[0px] rounded-[15px] bg-transparent bg-opacity-[0.5] rounded-xl shadow-xl backdrop-blur-[10px]">
+      <div className="w-full flex justify-between items-center bg-[#fff5] rounded-tl-[8px] rounded-tr-[8px]">
+        <div className="w-[640px] flex justify-center items-center">
+        <h1 className="text-2xl mt-[8px] mb-[3px] pl-[10px] text-[#1f2d3d]">TASKS</h1>
         </div>
         <div className="flex gap-[6px] mr-[15px]">
           <button
@@ -136,48 +136,48 @@ const Tasks = () => {
           </button>
         </div>
       </div>
-
-      <table className="w-[95%] rounded-[12px] p-[15px] pt-[0px] my-[18px]  border-collapse">
-        <thead className="bg-[#d6d2de]"> 
+      <div className="w-[95%] rounded-[12px] p-[15px] pt-[0px] my-[18px] text-[FFF] border-collapse ml-[20px] border-[#223244] overflow-hidden">
+      <table className="w-full border-collapse">
+        <thead className="bg-[#223244] text-[#FFF]"> 
           <tr className=" text-left">
-          <th className="p-[10px]">Id</th>
-            <th className="p-[10px]">Title</th>
-            <th className="p-[10px]">Assignee</th>
-            <th className="p-[10px]">Status</th>
-            <th className="p-[10px]">Actions</th>
+          <th className="p-[15px] rounded-tl-[12px] rounded-bl-[12px]">Id</th>
+            <th className="p-[15px] w-[46%]">Title</th>
+            <th className="p-[15px]">Assignee</th>
+            <th className="p-[15px]">Status</th>
+            <th className="p-[15px] rounded-tr-[12px] rounded-br-[12px]">Actions</th>
           </tr>
         </thead>
+        </table>
+
+        <div className="max-h-[300px] overflow-y-auto no-scrollbar">
+        <table className="w-full border-collapse text-[#FFF]">
         <tbody>
           {tasks.length > 0 ? (
             tasks.map((task) => (
               <tr key={task.id} className="border-t">
-                <td className="p-[10px] w-[10%]">{task.id}</td>
+                <td className="p-[10px] w-[10%] pl-[16px]">{task.id}</td>
                 <td className="p-[10px] w-[40%]">{task.title}</td>
                 <td className="p-[10px] w-[10%]">
-
-                <select
-          name="assigneeId"
-          value={task.assigneeId}
-          onChange={(e) => handleAssigneeChange(task.id, e.target.value)}
-          className="py-[5px] pr-[0px] pl-[5px] rounded-[5px] border-none bg-[#f3f4f6]"
-        >
-          <option value="" disabled>Select Assignee</option>
-          {users.map((user: User) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
-        </td>
+            <select
+                name="assigneeId"
+                value={task.assigneeId}
+                onChange={(e) => handleAssigneeChange(task.id, e.target.value)}
+                className="py-[5px] pr-[0px] pl-[5px] rounded-[5px] border-none bg-[#f3f4f6] text-[FFF]"
+              >
+                <option value="" disabled>Select Assignee</option>
+                {users.map((user: User) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </td>
 
                 <td className="p-[10px] w-[10%]">
                   <select
                     value={task.status}
                     onChange={(e) =>
-                      handleStatusChange(
-                        task.id,
-                        e.target.value as TaskStatus
-                      )
+                      handleStatusChange(task.id,e.target.value as TaskStatus)
                     }
                     className="py-[5px] pr-[0px] pl-[5px] rounded-[5px] border-none bg-[#f3f4f6]"
                   >
@@ -186,45 +186,19 @@ const Tasks = () => {
                     <option value={TaskStatus.DONE}>Done</option>
                   </select>
                 </td>
-                <td className="p-[10px] flex gap-[6px]">
-                  {/* {(user?.role === UserRole.ADMIN || task.createdBy === user?.id) && ( */}
-                    {/* <button
-                     onClick={() =>
-                      navigate('/createTasks', {
-                        state: { task: {
-                          id: task.id,
-                          title: task.title,
-                          description: task.description,
-                          assigneeId: task.assigneeId,
-                        } }
-                      })
-                    }
-                    className="bg-[#F59E0B] px-[20px] py-[5px] text-[#fff] rounded-[5px] border-none">
-                      Edit
-                    </button> */}
-
-
-                  {/* Inside the <td> with Edit button */}
-<button
-  onClick={() => handleEdit(task)}
-  className="bg-[#F59E0B] px-[20px] py-[5px] text-[#fff] rounded-[5px] border-none"
->
-  Edit
-</button>
-
-
-
-
-
-                   {/* )}  */}
-                  {/* {user?.role === UserRole.ADMIN && ( */}
+                <td className="w-[12%] p-[10px]">
+                  <button
+                    onClick={() => handleEdit(task)}
+                    className="px-[20px] py-[5px] rounded-[5px] border-none mr-[6px] border-none bg-[#6a5ccc] text-[#FFF] hover:bg-[#42397e]">
+                    Edit
+                  </button>
+                  {user?.role === UserRole.ADMIN && (
                     <button
                       onClick={() => handleDelete(task.id)}
-                      className="bg-[#EF4444] px-[15px] py-[5px] text-[#fff] rounded-[5px] border-none"
-                    >
+                      className="px-[15px] mt-[6px] py-[5px] rounded-[5px] border-none bg-[#6b56b2] text-[#FFF] hover:bg-[#382b5b]">
                       Delete
                     </button>
-                   {/* )}  */}
+                   )}
                 </td>
               </tr>
             ))
@@ -238,11 +212,12 @@ const Tasks = () => {
         </tbody>
       </table>
       </div>
+      </div>
+      </div>
       {editingTask && (
-  <TaskDrawer task={editingTask} onClose={closeDrawer} />
-)}
-
-    </div>
+        <TaskDrawer task={editingTask} onClose={closeDrawer} />
+      )}
+  </div>
   );
 };
 

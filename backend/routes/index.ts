@@ -10,11 +10,10 @@ router.use('/auth', authRoutes);
 router.use("/users", UserRoutes);
 router.use("/tasks", taskRoutes);
 router.use("/", roleRoutes);
-router.use("/", taskRoutes);
 
  //in the app.js
-router.get("/api", (req, res) => {
-  res.status(201).json("Server Created hi");
+router.get("/", (req, res) => {
+  res.status(200).json("Server is running successfully");
 });
 
 export default router;

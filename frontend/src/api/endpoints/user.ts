@@ -12,5 +12,9 @@ export const changeUserRole = async (userId: string, role: UserRole) => {
 };
 
 export const deleteUser = async (userId: string) => {
-  return await axiosInstance.delete(`${PREFIX}${userId}`);
+  return await axiosInstance.patch(`${PREFIX}${userId}/deactivate`);
+};
+
+export const updateUser = async (userId: string, updatedData: { name?: string; email?: string; password?: string }) => {
+  return await axiosInstance.put(`/api/users/${userId}`, updatedData);
 };
