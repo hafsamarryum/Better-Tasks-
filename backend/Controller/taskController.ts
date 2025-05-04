@@ -192,26 +192,6 @@ export const deleteTask = async (req: Request, res: Response) => {
   }
 };
 
- // fetch tasks by id
-export const getTaskById = async (req: Request, res: Response) => {
-  try {
-    const taskId = Number(req.params.taskId);
-
-    const task = await prisma.task.findUnique({
-      where: { id: taskId },
-      include: { assignee: true, createdBy: true }
-    });
-
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-
-    res.status(200).json(task);
-  } catch (err: any) {
-    res.status(500).json({ message: "Failed to fetch task", error: err.message });
-  }
-};
-
  // upadate assignee
 export const updateAssignee = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -273,3 +253,34 @@ export const getActivitiesForTask  = async (req: Request, res: Response) => {
    return res.status(500).json({ message: "Failed to fetch task activity"});
   }
 }
+
+ //dashboardStats
+ export const getDashboardStats = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized, user not found" });
+    }
+    const userId = req.user.id;
+    const [allTasksCount, myTasksCount, todo, inProgress, done, activeUsers] = await Promise.all([
+      prisma.task.count(),
+      prisma.task.count({ where: { assigneeId: userId } }),
+      prisma.task.count({ where: { assigneeId: userId, status: "TODO" } }),
+      prisma.task.count({ where: { assigneeId: userId, status: "IN_PROGRESS" } }),
+      prisma.task.count({ where: { assigneeId: userId, status: "DONE" } }),
+      prisma.user.count({where: {isActive: true}})
+    ]);
+    res.status(200).json({
+      totalTasks: allTasksCount,
+      myTasks: myTasksCount,
+      statusCounts: {
+        TODO: todo,
+        IN_PROGRESS: inProgress,
+        DONE: done,
+      },
+      activeUsers: activeUsers,
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    res.status(500).json({ message: "Failed to fetch dashboard stats", error });
+  }
+};
