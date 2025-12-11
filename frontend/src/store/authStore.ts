@@ -1,10 +1,12 @@
 import { create } from "zustand";
+import { UserRole } from "../utilities/enum";
+import { persist } from "zustand/middleware";
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: 'ADMIN' | 'MEMBER';
+  role: UserRole.ADMIN | UserRole.MEMBER;
 }
 
 interface AuthState {
@@ -16,28 +18,26 @@ interface AuthState {
   setLoading: (state: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => {
-  const storedUser = localStorage.getItem("user");
-  const storedToken = localStorage.getItem("token");
-
-  return {
-    user: storedUser ? JSON.parse(storedUser) : null,
-    token: storedToken,
+export const useAuthStore = create<AuthState>()(persist(
+  (set) => ({
+    user: null,
+    token: null,
     loading: false,
-
+  
     setUser: (user, token) => {
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
       set({ user, token, loading: false });
     },
 
     logout: () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
       set({ user: null, token: null, loading: false });
     },
 
     setLoading: (state) => set({ loading: state }),
-  };
-});
+  }),
+  {
+    name: "auth-storage",
+    partialize: (state) => ({ user: state.user, token: state.token }),
+  }
+  )
+);
 

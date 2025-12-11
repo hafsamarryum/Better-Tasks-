@@ -4,32 +4,43 @@
 @tailwind components;
 @tailwind utilities;
 
-
-body{
-   box-sizing: border-box;
-   margin: auto;
-   padding: auto;
+body {
+  box-sizing: border-box;
+  margin: auto;
+  padding: auto;
 }
 
 .font {
-   font-family: "Jura", serif;
-   font-optical-sizing: auto;
-   font-weight: 900;
-   font-style: normal;
-}
-
-.tableImg {
-   background-image: url("../src/assets/images/tableBg.jpg");
-   width: 80%;
-   height: auto;
-   object-fit: cover;
-   object-position: center;
+  font-family: "Jura", serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
 }
 
 .custom-scroll {
-   height: 10px;
-   border: 2px solid red;
-   overflow-y: auto;
-   scrollbar-width: none; 
+  height: 10px;
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
+
+.loginImg {
+   width: 100vw;
+  background-image: url("../src/assets/images/loginBg.jpg");
+  background-size: cover; 
+  background-repeat: no-repeat; 
+  background-position: center; 
+  overflow: hidden;
+}
+
+.dashBoardImg {
+  background-image: url("../src/assets/images/dashboardBg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

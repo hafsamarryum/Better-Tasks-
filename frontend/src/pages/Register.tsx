@@ -3,6 +3,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import { registerUser } from "../api/endpoints/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 type RegisterFormInputs = {
   name: string;
@@ -14,6 +16,7 @@ type RegisterFormInputs = {
 const Register: React.FC = () => {
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -33,46 +36,40 @@ const Register: React.FC = () => {
         password: data.password,
       });
 
-      alert("User registered successfully!");
+      toast.success("User registered successfully!");
       reset();
+      setTimeout(() => {
+      navigate("/dashboard");
+      }, 1000);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
-        alert(`Errorif: ${error.message} `);
+        toast.error(`Errorif: ${error.message} || This email is already registered`);
       } else {
         console.error("An unknown error occurred");
-        alert("An unknown error occurred");
+        toast.error("An unknown error occurred");
       }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fdb0b6] via-[#f8efa5] to-[#8dbff0]">
-      <div className="relative w-[360px] bg-transparent bg-opacity-20 rounded-xl shadow-xl backdrop-blur-md p-[12px]  border-[#FFF] border-[2px] rounded-[13px]">
-        <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-          <svg
-            className="w-8 h-8 text-white"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-          </svg>
-        </div>
-
-        <h2 className="text-center text-[#bcbfb8] text-xl font-semibold mb-6 mt-6">
+    <div className="min-h-screen w-[100%] flex items-center justify-center relative loginImg">
+      <div className="flex relative top-[80px] left-[100px]">
+      <div className="relative w-[360px] bg-transparent bg-opacity-20 rounded-xl shadow-xl backdrop-blur-[5px] p-[12px]  border-[#FFF] border-[2px] rounded-[13px]">
+        <h2 className="text-center text-[#384f5a] text-xl font-semibold m-[2px] mb-[15px]">
           Register Form
         </h2>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4 flex flex-col gap-[20px]"
+          className="space-y-4 flex flex-col gap-[12px]"
         >
           <div className="w-full flex flex-col">
             <input
               type="text"
               placeholder="Username"
               {...register("name", { required: "Username is required" })}
-              className=" py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#bcbfb8] border-none rounded-[6px]"
+              className=" py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#384f5a] border-none rounded-[6px]"
             />
             {errors.name && (
               <p className="text-sm text-[#ff0e3e] ml-[8px]">
@@ -86,7 +83,7 @@ const Register: React.FC = () => {
               type="email"
               placeholder="Email"
               {...register("email", { required: "Email is required" })}
-              className=" py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#bcbfb8] border-none rounded-[6px]"
+              className=" py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#384f5a] border-none rounded-[6px]"
             />
             {errors.email && (
               <p className="text-sm text-[#ff0e3e] ml-[8px]">
@@ -100,7 +97,7 @@ const Register: React.FC = () => {
               type={showPass ? "text" : "password"}
               placeholder="Password"
               {...register("password", { required: "Password is required" })}
-              className="py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#bcbfb8] border-none rounded-[6px]"
+              className="py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#384f5a] border-none rounded-[6px]"
             />
             <button
               type="button"
@@ -125,7 +122,7 @@ const Register: React.FC = () => {
                 validate: (value) =>
                   value === password || "Passwords do not match",
               })}
-              className=" py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#bcbfb8] border-none rounded-[6px]"
+              className=" py-[12px] pl-[8px] rounded-md bg-white bg-opacity-80 focus:outline-none text-[#384f5a] border-none rounded-[6px]"
             />
             <button
               type="button"
@@ -144,24 +141,23 @@ const Register: React.FC = () => {
           <div className="flex justify-center mt[10px]">
             <button
               type="submit"
-              className="w-[220px] bg-gradient-to-r from-[#7ac5ec] to-[#73bdd5] text-[#FFF]  py-[12px] rounded-[8px] hover:opacity-90 transition border-none text-center font-bold text-[20px] "
+              className="w-[220px] bg-[#4582b9] text-[#FFF]  py-[12px] rounded-[8px] hover:opacity-90 transition border-none text-center font-bold text-[20px] "
             >
               Register
             </button>
           </div>
 
-          <hr className="border-t border-white/40 mt-4" />
-
-          <div className="text-center text-[#bcbfb8] text-[17px] mt-2">
+          <div className="text-center text-[#384f5a] text-[17px] mt-2">
             Don’t have an account?{" "}
             <Link
               to="/login"
-              className="underline hover:text-blue-200 ml-[7px] text-[#939efa]"
+              className="underline hover:text-[#ffde59] ml-[7px] text-[#384f5a]"
             >
               LOGIN HERE
             </Link>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );
